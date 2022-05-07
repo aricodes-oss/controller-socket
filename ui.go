@@ -39,9 +39,12 @@ func loop(ctx *Context) {
 		),
 
 		g.Dummy(8.0, 32.0),
-		g.Row(g.Dummy(-100, 0), g.Button("Start Comms").OnClick(func() {
-			go initComms(ctx)
-		})),
+		g.Row(
+			g.Dummy(-100, 0),
+			g.Button("Start Comms").OnClick(func() {
+				go initComms(ctx)
+			}),
+		),
 	)
 
 	g.PopStyleV(2)

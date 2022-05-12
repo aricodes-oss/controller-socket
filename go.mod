@@ -8,6 +8,7 @@ require (
 	github.com/AllenDang/imgui-go v1.12.1-0.20220322114136-499bbf6a42ad // indirect
 	github.com/creack/goselect v0.1.2 // indirect
 	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 // indirect
+	github.com/gempir/go-twitch-irc/v3 v3.1.0 // indirect
 	github.com/go-gl/gl v0.0.0-20211210172815-726fda9656d6 // indirect
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20220320163800-277f93cfa958 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect

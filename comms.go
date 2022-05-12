@@ -6,7 +6,7 @@ import (
 	"go.bug.st/serial"
 )
 
-func initComms(ctx *Context) {
+func (ctx *Context) InitComms() {
 	if ctx.CommsConnected {
 		if *ctx.Socket != nil {
 			(*ctx.Socket).Close()
@@ -20,7 +20,7 @@ func initComms(ctx *Context) {
 		BaudRate: 115200,
 	}
 
-	port, err := serial.Open(ctx.Config.SerialPortName, mode)
+	port, err := serial.Open(ctx.SerialPortName(), mode)
 	if err != nil {
 		ctx.CommsConnected = false
 		ctx.Socket = nil
@@ -29,10 +29,10 @@ func initComms(ctx *Context) {
 
 	port.Write([]byte("RACK\n"))
 
-	response := make([]byte, 3)
+	response := make([]byte, 6)
 	bytesRead := 0
 
-	for bytesRead < 3 {
+	for bytesRead < 6 {
 		read, err := port.Read(response)
 		if err != nil {
 			port.Close()
@@ -42,10 +42,10 @@ func initComms(ctx *Context) {
 		bytesRead += read
 	}
 
-	if string(response) == "ACK" {
+	if string(response) == "ACKGCN" {
 		ctx.Socket = &port
 		ctx.CommsConnected = true
-		fmt.Println("Completed handshake with " + ctx.Config.SerialPortName + "!")
+		fmt.Println("Completed handshake with " + ctx.SerialPortName() + "!")
 	} else {
 		fmt.Println("Handshake unsuccessful, socket closing")
 		port.Close()

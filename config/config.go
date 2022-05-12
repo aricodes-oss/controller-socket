@@ -6,8 +6,26 @@ import (
 )
 
 type Config struct {
-	TwitchChannel  string
-	SerialPortName string
+	TwitchChannel string
+	PressDuration int32 // Specified because GIU is weird about ints
+
+	ButtonTriggers struct {
+		A string
+		B string
+
+		X string
+		Y string
+		Z string
+
+		L     string
+		R     string
+		START string
+
+		UP    string
+		DOWN  string
+		LEFT  string
+		RIGHT string
+	}
 }
 
 func LoadConfig() Config {

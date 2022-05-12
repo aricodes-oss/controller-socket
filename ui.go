@@ -205,11 +205,12 @@ func loop(ctx *Context) {
 				g.Button(buttonText).OnClick(func() { go onClick() }),
 			).Build()
 		}),
+		g.Label("Status: "+ctx.Status),
 	)
 }
 
 func uiStart(ctx *Context) {
-	wnd := g.NewMasterWindow("Twitch to Gamecube Adapter", 580, 580, g.MasterWindowFlagsFloating+g.MasterWindowFlagsNotResizable)
+	wnd := g.NewMasterWindow("Twitch to Gamecube Adapter", 580, 610, g.MasterWindowFlagsFloating+g.MasterWindowFlagsNotResizable)
 	wnd.Run(func() {
 		loop(ctx)
 	})

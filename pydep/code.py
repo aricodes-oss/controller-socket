@@ -1,6 +1,6 @@
 import usb_cdc
 import board
-from digitalio import DigitalInOut, Direction, Pull
+from digitalio import DigitalInOut, Direction
 
 data_port = usb_cdc.data
 
@@ -8,7 +8,6 @@ data_port = usb_cdc.data
 def _init_pin(pin):
     res = DigitalInOut(pin)
     res.direction = Direction.OUTPUT
-    res.pull = Pull.UP
 
 
 # The ordering needs to line up with the enum ordering in the Go client

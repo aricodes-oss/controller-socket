@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"go.bug.st/serial"
 )
 
@@ -45,9 +43,9 @@ func (ctx *Context) InitComms() {
 	if string(response) == "ACKGCN" {
 		ctx.Socket = &port
 		ctx.CommsConnected = true
-		fmt.Println("Completed handshake with " + ctx.SerialPortName() + "!")
+		ctx.Status = "Completed handshake with " + ctx.SerialPortName() + "!"
 	} else {
-		fmt.Println("Handshake unsuccessful, socket closing")
+		ctx.Status = "Handshake unsuccessful, socket closing"
 		port.Close()
 	}
 }

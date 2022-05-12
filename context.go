@@ -2,7 +2,7 @@ package main
 
 import (
 	"csock/config"
-	"fmt"
+	"github.com/bits-and-blooms/bitset"
 	"github.com/gempir/go-twitch-irc/v3"
 	"go.bug.st/serial"
 )
@@ -13,6 +13,8 @@ type Context struct {
 	CommsConnected bool
 	Socket         *serial.Port
 	TwitchClient   *twitch.Client
+	ButtonState    bitset.BitSet
+	Status         string
 }
 
 func (c *Context) SerialPortName() string {
@@ -37,11 +39,18 @@ func (c *Context) ConnectTwitch() {
 		c.TwitchClient.Disconnect()
 	}
 
+	if c.Config.TwitchChannel == "" {
+		c.Status = "Please enter a channel name before connecting."
+		return
+	}
+
 	client := twitch.NewAnonymousClient()
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		fmt.Println(message.Message)
+		messageCallback(c, message)
 	})
 	client.Join(c.Config.TwitchChannel)
+
+	c.Status = "Connected to " + c.Config.TwitchChannel
 
 	c.TwitchClient = client
 	client.Connect()
@@ -51,5 +60,6 @@ func (c *Context) DisconnectTwitch() {
 	if c.TwitchClient != nil {
 		c.TwitchClient.Disconnect()
 		c.TwitchClient = nil
+		c.Status = "Twitch client disconnected"
 	}
 }

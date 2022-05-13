@@ -18,4 +18,9 @@ const (
 	DOWN
 	LEFT
 	RIGHT
+
+	CUP
+	CDOWN
+	CLEFT
+	CRIGHT
 )

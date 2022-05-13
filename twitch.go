@@ -7,7 +7,7 @@ import (
 )
 
 func (ctx *Context) Release(b Button) {
-	if !ctx.ButtonState.Test(uint(b)) {
+	if !ctx.Pressed(b) {
 		return
 	}
 
@@ -16,47 +16,99 @@ func (ctx *Context) Release(b Button) {
 }
 
 func (ctx *Context) Press(b Button) {
-	if ctx.ButtonState.Test(uint(b)) {
+	if ctx.Pressed(b) {
 		return
 	}
 
 	ctx.ButtonState.Set(uint(b))
 	(*ctx.Socket).Write([]byte(fmt.Sprintf("p%d\n", b)))
+}
+
+func (ctx *Context) PressAndRelease(b Button) {
 	go func() {
+		ctx.Press(b)
 		time.Sleep(time.Millisecond * time.Duration(ctx.Config.PressDuration))
 		ctx.Release(b)
 	}()
+}
+
+func (ctx *Context) Toggle(b Button) {
+	if ctx.Pressed(b) {
+		ctx.Release(b)
+	} else {
+		ctx.Press(b)
+	}
+}
+
+func (ctx *Context) Pressed(b Button) bool {
+	return ctx.ButtonState.Test(uint(b))
+}
+
+func HandleDirection(ctx *Context, current, opposite Button) {
+	socdAllowed := ctx.Config.AllowSOCD
+	holdDirections := ctx.Config.HoldDirections
+
+	// No sanity checks applied
+	if socdAllowed {
+		if holdDirections {
+			// SOCD && Hold
+			ctx.Toggle(current)
+		} else {
+			// SOCD && !Hold
+			ctx.PressAndRelease(current)
+		}
+	} else {
+		// !SOCD
+		if ctx.Pressed(opposite) {
+			ctx.Release(opposite)
+		}
+
+		if holdDirections {
+			ctx.Toggle(current)
+		} else {
+			ctx.PressAndRelease(current)
+		}
+	}
 }
 
 func messageCallback(ctx *Context, message twitch.PrivateMessage) {
 	triggers := ctx.Config.ButtonTriggers
 	switch message.Message {
 	case triggers.A:
-		ctx.Press(A)
+		ctx.PressAndRelease(A)
 	case triggers.B:
-		ctx.Press(B)
+		ctx.PressAndRelease(B)
 	case triggers.X:
-		ctx.Press(X)
+		ctx.PressAndRelease(X)
 	case triggers.Y:
-		ctx.Press(Y)
+		ctx.PressAndRelease(Y)
 
 	case triggers.L:
-		ctx.Press(L)
+		ctx.PressAndRelease(L)
 	case triggers.R:
-		ctx.Press(R)
+		ctx.PressAndRelease(R)
 	case triggers.Z:
-		ctx.Press(Z)
+		ctx.PressAndRelease(Z)
 
 	case triggers.START:
-		ctx.Press(START)
+		ctx.PressAndRelease(START)
 
 	case triggers.UP:
-		ctx.Press(UP)
+		HandleDirection(ctx, UP, DOWN)
 	case triggers.DOWN:
-		ctx.Press(DOWN)
+		HandleDirection(ctx, DOWN, UP)
 	case triggers.LEFT:
-		ctx.Press(LEFT)
+		HandleDirection(ctx, LEFT, RIGHT)
 	case triggers.RIGHT:
-		ctx.Press(RIGHT)
+		HandleDirection(ctx, RIGHT, LEFT)
+
+	case triggers.CUP:
+		HandleDirection(ctx, UP, DOWN)
+	case triggers.CDOWN:
+		HandleDirection(ctx, DOWN, UP)
+	case triggers.CLEFT:
+		HandleDirection(ctx, LEFT, RIGHT)
+	case triggers.CRIGHT:
+		HandleDirection(ctx, RIGHT, LEFT)
 	}
 }

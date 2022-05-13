@@ -67,7 +67,13 @@ func loop(ctx *Context) {
 		),
 
 		g.Dummy(8.0, V_SPACING),
-		g.Label("Button Triggers"),
+		g.Row(
+			g.Checkbox("Hold directions until released", &ctx.Config.HoldDirections).OnChange(ctx.Config.Save),
+			g.Checkbox("Allow SOCD (up+down/left+right)", &ctx.Config.AllowSOCD).OnChange(ctx.Config.Save),
+		),
+
+		g.Dummy(8.0, V_SPACING),
+		g.Label("Button Triggers (case sensitive)"),
 		g.Dummy(8.0, V_SPACING/3),
 		g.Row(
 			g.Column(
@@ -164,6 +170,40 @@ func loop(ctx *Context) {
 			),
 		),
 
+		g.Dummy(1.0, V_SPACING/2),
+
+		g.Row(
+			g.Column(
+				g.Row(
+					g.Label("CUP:"),
+				),
+				g.Row(
+					g.Label("CDOWN:"),
+				),
+			),
+
+			g.Column(
+				g.InputText(&ctx.Config.ButtonTriggers.CUP).OnChange(ctx.Config.Save).Size(INPUT_SIZE*1.5),
+				g.InputText(&ctx.Config.ButtonTriggers.CDOWN).OnChange(ctx.Config.Save).Size(INPUT_SIZE*1.5),
+			),
+
+			g.Dummy(8.0, 1.0),
+
+			g.Column(
+				g.Row(
+					g.Label("CLEFT:"),
+				),
+				g.Row(
+					g.Label("CRIGHT:"),
+				),
+			),
+
+			g.Column(
+				g.InputText(&ctx.Config.ButtonTriggers.CLEFT).OnChange(ctx.Config.Save).Size(INPUT_SIZE*1.5),
+				g.InputText(&ctx.Config.ButtonTriggers.CRIGHT).OnChange(ctx.Config.Save).Size(INPUT_SIZE*1.5),
+			),
+		),
+
 		g.Dummy(8.0, 32.0),
 		g.Custom(func() {
 			width, _ := g.GetAvailableRegion()
@@ -210,7 +250,7 @@ func loop(ctx *Context) {
 }
 
 func uiStart(ctx *Context) {
-	wnd := g.NewMasterWindow("Twitch to Gamecube Adapter", 580, 610, g.MasterWindowFlagsFloating+g.MasterWindowFlagsNotResizable)
+	wnd := g.NewMasterWindow("Twitch to Gamecube Adapter", 580, 724, g.MasterWindowFlagsFloating+g.MasterWindowFlagsNotResizable)
 	wnd.Run(func() {
 		loop(ctx)
 	})

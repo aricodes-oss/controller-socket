@@ -6,8 +6,10 @@ import (
 )
 
 type Config struct {
-	TwitchChannel string
-	PressDuration int32 // Specified because GIU is weird about ints
+	TwitchChannel  string
+	PressDuration  int32 // Specified because GIU is weird about ints
+	HoldDirections bool
+	AllowSOCD      bool
 
 	ButtonTriggers struct {
 		A string
@@ -25,6 +27,11 @@ type Config struct {
 		DOWN  string
 		LEFT  string
 		RIGHT string
+
+		CUP    string
+		CDOWN  string
+		CLEFT  string
+		CRIGHT string
 	}
 }
 

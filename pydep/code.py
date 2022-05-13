@@ -1,13 +1,22 @@
 import usb_cdc
 import board
 from digitalio import DigitalInOut, Direction
+from time import sleep
+
+sleep(5)
 
 data_port = usb_cdc.data
+
+# We're using inverse digital logic
+PRESSED = False
+RELEASED = True
 
 
 def _init_pin(pin):
     res = DigitalInOut(pin)
     res.direction = Direction.OUTPUT
+    res.value = RELEASED
+    return res
 
 
 # The ordering needs to line up with the enum ordering in the Go client
@@ -24,13 +33,13 @@ output_pins = [
     board.GP3,  # DOWN
     board.GP4,  # LEFT
     board.GP2,  # RIGHT
+    board.GP12,  # CUP
+    board.GP15,  # CDOWN
+    board.GP13,  # CLEFT
+    board.GP16,  # CRIGHT
 ]
 
 outputs = [_init_pin(pin) for pin in output_pins]
-
-# We're using inverse digital logic
-PRESSED = False
-RELEASED = True
 
 
 def _get_and_validate_pin(packet):
@@ -47,7 +56,7 @@ def _get_and_validate_pin(packet):
 
 while True:
     packet = data_port.readline().decode().strip()
-    print(packet)
+    # print(packet)
 
     if packet == "RACK":
         data_port.write(b"ACKGCN")

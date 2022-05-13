@@ -22,6 +22,7 @@ func (ctx *Context) InitComms() {
 	if err != nil {
 		ctx.CommsConnected = false
 		ctx.Socket = nil
+		ctx.Status = "Serial failure - try a different port?"
 		return
 	}
 
@@ -29,15 +30,23 @@ func (ctx *Context) InitComms() {
 
 	response := make([]byte, 6)
 	bytesRead := 0
+	cycles := 0
 
 	for bytesRead < 6 {
 		read, err := port.Read(response)
 		if err != nil {
+			ctx.Status = "Serial failure - try a different port?"
 			port.Close()
 			return
 		}
 
 		bytesRead += read
+		cycles += 1
+
+		if cycles > 20 {
+			ctx.Status = "Failure to receive ACK from serial port"
+			return
+		}
 	}
 
 	if string(response) == "ACKGCN" {
